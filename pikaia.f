@@ -261,6 +261,8 @@ c
 c=======================================================================
 c     USES: ff, urand, setctl, report, rnkpop, select, encode, decode,
 c           cross, mutate, genrep, stdrep, newpop, adjmut
+      use omp_lib
+      use phase
       implicit none
  
 c     Input:
@@ -417,21 +419,23 @@ c     Make sure locally-dimensioned arrays are big enough
       endif
  
 c     Compute initial (random but bounded) phenotypes
+      !$omp parallel do private(phasetheory)
       do 1 ip=1,np
          do 2 k=1,n
             oldph(k,ip)=urand()
     2    continue
          fitns(ip) = ff(n,oldph(1,ip))
     1 continue
- 
+      !$omp end parallel do
+ !!!!!这里计算初始参数对应的判断值，放到fitns中
 c     Rank initial population by fitness order
       call rnkpop(np,fitns,ifit,jfit)
- 
+!!!把初始值排序
 c     Main Generation Loop
-      do 10 ig=1,ngen
- 
+      do 10 ig=1,ngen 
 c        Main Population Loop
          newtot=0
+      !$omp parallel do private(phasetheory)    
          do 20 ip=1,np/2
  
 c           1. pick two parents
@@ -451,7 +455,7 @@ c           3. breed
 c           4. decode offspring genotypes
             call decode(n,nd,gn1,ph(1,1))
             call decode(n,nd,gn2,ph(1,2))
- 
+ !!!这里只产生了两个后代
 c           5. insert into population
             if (irep.eq.1) then
                call genrep(NMAX,n,np,ip,ph,newph)
@@ -460,15 +464,15 @@ c           5. insert into population
      +                     ph,oldph,fitns,ifit,jfit,new)
                newtot = newtot+new
             endif
- 
+ !!!!!这里新的一代已经产生，计算新一代的fitness函数（尚未计算）
 c        End of Main Population Loop
    20    continue
- 
+      !$omp end parallel do
 c        if running full generational replacement: swap populations
          if (irep.eq.1)
      +      call newpop(ff,ielite,NMAX,n,np,oldph,newph,
      +         ifit,jfit,fitns,newtot)
- 
+ !!!!在newpop中计算新的fitns
 c        adjust mutation rate?
          if (imut.eq.2 .or. imut.eq.3 .or. imut.eq.5 .or. imut.eq.6)
      +      call adjmut(NMAX,n,np,oldph,fitns,ifit,pmutmn,pmutmx,
@@ -479,6 +483,7 @@ c
  
 c     End of Main Generation Loop
    10 continue
+
 c
 c     Return best phenotype and its fitness
       do 30 k=1,n
@@ -1197,6 +1202,8 @@ c======================================================================
 c     replaces old population by new; recomputes fitnesses & ranks
 c======================================================================
 c     USES: ff, rnkpop
+      use phase
+      use omp_lib
       implicit none
 c
 c     Input:
@@ -1226,8 +1233,9 @@ c     to replace)
     1    continue
          nnew = nnew-1
       endif
- 
+!!!只有计算fitness函数的时候大幅影响速度吗，需要并行，这里实际上
 c     replace population
+      !$omp parallel do private(phasetheory)
       do 2 i=1,np
          do 3 k=1,n
             oldph(k,i)=newph(k,i)
@@ -1236,7 +1244,7 @@ c     replace population
 c        get fitness using caller's fitness function
          fitns(i)=ff(n,oldph(1,i))
     2 continue
- 
+      !$omp end parallel do
 c     compute new population fitness rank order
       call rnkpop(np,fitns,ifit,jfit)
  

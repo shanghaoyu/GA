@@ -1,8 +1,10 @@
         
+c this version is for openmp 
       module phase
 c this module include globle varables will be used in 
 c all the subroutines,the initial subroutine set the 
 c initial values and allocate the varables.
+        use omp_lib
         real*8,save,allocatable :: phaseexp(:,:),phasetheory(:,:)
         integer,save :: phasenum,melabnum
         integer,save :: phasename(40,2)
@@ -47,34 +49,42 @@ c array contact contains the constants in contact terms
 c n is the dimension
 c cutoff is the cutoff of the nuclear force
 c this subroutine will use two files 'input.d'
-            integer :: n 
+            integer :: n ,id
+            character*2 :: filenum
             real*8 :: contactvalue(n),cutoff
-            open(UNIT=10,file='input.d') 
-            write(10,*) phasenum
+            id=omp_get_thread_num()
+            if(id < 10)then
+            write(filenum,'(I1)') id
+            else
+            write(filenum,'(I2)') id
+            end if
+            id=10+id
+            open(id,file='input'//filenum) 
+            write(id,*) phasenum
             do i=1,phasenum
-            write(10,*) phasename(i,:)
+            write(id,*) phasename(i,:)
             end do
-            write(10,*) melabnum
+            write(id,*) melabnum
             do i=1,melabnum
-            write(10,*) phaseexp(i,1)
+            write(id,*) phaseexp(i,1)
             end do
 1002        format(f10.6)
             do i=1,n
-            write(10,1002) contactvalue(i)
+            write(id,1002) contactvalue(i)
             end do
-            write(10,*) cutoff
-            close(10)
+            write(id,*) cutoff
+            close(id)
 
 c  calculate theoretic phases
 
-            CALL system('phase.exe')
+            CALL system('./phase.o '//filenum)
      
 c  read in the theoretic phases
-            open(UNIT=11,file='output.d')
+            open(id,file='output'//filenum)
             do i=1,melabnum
-            read(11,*) phasetheory(i,:)   
+            read(id,*) phasetheory(i,:)   
             end do
-            close(11)
+            close(id)
         return
         end subroutine
 

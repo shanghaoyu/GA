@@ -23,7 +23,8 @@ c     Set control variables (use defaults)
       do 10 i=1,12
          ctrl(i) = -1
    10 continue
-      ctrl(2)=1
+      ctrl(2)=500
+      ctrl(1)=128
       
       call ini_phase
       call constant_int

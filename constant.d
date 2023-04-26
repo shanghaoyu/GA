@@ -1,0 +1,12 @@
+cutoff  1000.0
+contactnum  9
+lowbound upbound
+-1 1
+-8 8
+-1 1
+0 8
+-5 2
+-1 1
+-1 3
+-1 1
+-3 3

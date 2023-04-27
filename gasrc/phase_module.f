@@ -77,7 +77,7 @@ c this subroutine will use two files 'input.d'
 
 c  calculate theoretic phases
 
-            CALL system('./phase.o '//filenum)
+            CALL system('./phase '//filenum)
      
 c  read in the theoretic phases
             open(id,file='output'//filenum)

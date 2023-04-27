@@ -149,7 +149,7 @@ c    z is cos(theta)
         contains
           real*8 function vcentral(z)
             real*8 z
-            integer ::type=2
+            integer ::type=1
             if(vc) then
                select case(type)
                case(1)
@@ -159,7 +159,12 @@ c    z is cos(theta)
             vcentral=0.01d0*wnq*c(1)/(1.0d0
      1      -(c(2)*wnq*wnq*1.0d-8*normq(z)**2
      2      +c(3)*wnq*wnq*1.0d-8*normk(z)**2)
-     3      /0.01d0*wnq*c(1)) 
+     3      /0.01d0*wnq*c(1))
+               case(3)
+            vcentral=0.01d0*wnq*c(1)/(1.0d0
+     1      -(c(2)*wnq*wnq*1.0d-8*normq(z)**2)
+     2      /0.01d0*wnq*c(1))+c(3)*wnq*wnq
+     3      *1.0d-8*normk(z)**2
                end select
 
 

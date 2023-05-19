@@ -1,4 +1,5 @@
 c*********************************************************************
+
       function urand()
 c=====================================================================
 c     Return the next pseudo-random deviate from a sequence which is
@@ -33,14 +34,13 @@ c     type3
       return
       end
 c*********************************************************************
-      subroutine rninit( seed )
+      subroutine rninit()
 c=====================================================================
 c     Initialize random number generator urand with given seed
 c=====================================================================
       implicit none
 c
-c     Input
-      integer seed
+c     Input-none
 c
 c     Output - none
 c
@@ -49,10 +49,16 @@ c     Local
 c
 c     Common block to communicate with urand
       common /rnseed/ iseed
-c
+      integer, dimension(8) :: t
+
+      ! 获取当前日期和时间
+      call date_and_time(values = t)
+  
+      ! 将小时、分钟和秒转换为一个整数
+      iseed = t(5) * 3600 + t(6) * 60 + t(7)
 c     Set the seed value
-      iseed = seed
       if(iseed.le.0) iseed=123456
+      write(*,*) iseed
       return
       end
 c*********************************************************************

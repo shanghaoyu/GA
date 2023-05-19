@@ -9,6 +9,7 @@ c======================================================================
       integer n, i, status
       real ctrl(12), f, fun
       real,allocatable :: x(:)
+      
 c     note this xs' range ([0,1])  
       external fun
       external pikaia
@@ -31,7 +32,7 @@ c     Set control variables (use defaults)
       call constant_int
       n=num_par
       allocate(x(num_par))
-      call rninit( 89320145 )
+      call rninit()
 c     Now call pikaia
       call pikaia(fun,n,ctrl,x,f,status)
 c

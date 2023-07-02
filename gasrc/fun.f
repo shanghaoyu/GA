@@ -21,7 +21,7 @@
       chisquare=chisquare/(phasenum*melabnum)
       chisquare=dsqrt(chisquare)
 c the fortran program can only be used in maxum problems      
-      chisquare=1.0d0/(chisquare-0.5d0)
+      chisquare=1.0d0/(chisquare)
       fun=real(chisquare)
       RETURN
       END

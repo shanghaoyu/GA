@@ -41,7 +41,7 @@ c     Print the results
       do i=1,n
       write(*,"(f10.6)") x(i)
       end do
-      write(*,*) '      f: ',0.5+1.0/f
+      write(*,*) '      f: ',1.0/f
 
       call releaseval
       call constant_rel

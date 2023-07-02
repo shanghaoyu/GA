@@ -1,4 +1,4 @@
-        
+       
 c this version is for openmp 
       module phase
 c this module include globle varables will be used in 
@@ -7,7 +7,8 @@ c initial values and allocate the varables.
         use omp_lib
         real*8,save,allocatable :: phaseexp(:,:)
         integer,save :: phasenum,melabnum
-        integer,save :: phasename(40,2),phasetheory(50,50)
+        integer,save :: phasename(40,2)
+        real*8,save :: phasetheory(50,50)
 !$omp threadprivate(phasetheory)
         contains
         subroutine ini_phase
@@ -82,7 +83,7 @@ c  calculate theoretic phases
 c  read in the theoretic phases
             open(id,file='output'//filenum)
             do i=1,melabnum
-            read(id,*) phasetheory(i,1:phasenum)   
+            read(id,*) phasetheory(i,1:phasenum+1)   
             end do
             close(id)
         return

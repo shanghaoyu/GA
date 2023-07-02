@@ -25,7 +25,7 @@ c     Set control variables (use defaults)
          ctrl(i) = -1
    10 continue
       ctrl(1)=2000
-      ctrl(2)=1000
+      ctrl(2)=250
       ctrl(10)=1
       
       call ini_phase
